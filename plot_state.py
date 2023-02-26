@@ -70,7 +70,9 @@ def main():
 
     # new draw tool to visualize intermediate states
     fig = draw_states(qnode)(features, params)
-    fig.write_html("plot_state.html")  # save html
+    fig.write_html(
+        "plot_state.html", full_html=False, include_plotlyjs="cdn"
+    )  # save html
 
     # create animation gif
     animate_fig(fig)
