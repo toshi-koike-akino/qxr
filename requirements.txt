@@ -1,0 +1,9 @@
+pennylane
+argparse
+tqdm
+vtk
+plotly
+kalaido
+Pillow
+#hashlib
+#bpy
