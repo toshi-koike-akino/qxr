@@ -57,15 +57,14 @@ Suppose we use a QML model having [AngleEmbedding](https://docs.pennylane.ai/en/
 With a built-in [draw](https://docs.pennylane.ai/en/stable/code/api/pennylane.drawer.draw.html), we can draw it in 'gradient' or 'device' expansion strategy as follows:
 
 ```python
-    print(qml.draw(qnode, expansion_strategy="gradient")(features, params))
-
+print(qml.draw(qnode, expansion_strategy="gradient")(features, params))
 0: ─╭AngleEmbedding(M0)─╭SimplifiedTwoDesign─┤  <Z>
 1: ─├AngleEmbedding(M0)─├SimplifiedTwoDesign─┤  <Z>
 2: ─├AngleEmbedding(M0)─├SimplifiedTwoDesign─┤  <Z>
 3: ─├AngleEmbedding(M0)─├SimplifiedTwoDesign─┤  <Z>
 4: ─╰AngleEmbedding(M0)─╰SimplifiedTwoDesign─┤  <Z>
 
-    print(qml.draw(qnode, expansion_strategy="device")(features, params))
+print(qml.draw(qnode, expansion_strategy="device")(features, params))
 0: ──RX(0.86)──RY(0.82)─╭●──RY(0.09)──────────────╭●──RY(0.56)──────────────┤  <Z>
 1: ──RX(0.37)──RY(0.10)─╰Z──RY(0.35)─╭●──RY(0.55)─╰Z──RY(0.77)─╭●──RY(0.90)─┤  <Z>
 2: ──RX(0.56)──RY(0.93)─╭●──RY(0.66)─╰Z──RY(0.70)─╭●──RY(0.91)─╰Z──RY(0.46)─┤  <Z>
@@ -76,10 +75,8 @@ With a built-in [draw](https://docs.pennylane.ai/en/stable/code/api/pennylane.dr
 The built-in [draw_mpl](https://docs.pennylane.ai/en/stable/code/api/pennylane.drawer.draw_mpl.html) provides the corresponding plots like:
 
 ```python
-    fig, _ = qml.draw_mpl(qnode, style="sketch", expansion_strategy="device")(
-        features, params
-    )
-    fig.show()
+fig, _ = qml.draw_mpl(qnode, style="sketch", expansion_strategy="device")(features, params)
+fig.show()
 ```
 
 ![draw_device](./images/draw_device.png)
@@ -91,13 +88,13 @@ The above drawers need specific 'features' and 'params' to visualize, but they a
 Our visualization tool is written in [plot_state.py](plot_state.py). For example, draw_states() plots 3D interactive state vector evolutions:
 
 ```python
-from plot_state import draw_state
+from plot_state import draw_states
 fig = draw_states(qnode)(features, params)
 ```
 
 ![plot_state_hover](images/plot_state_hover.png)
 As shown above, we can check probability and phase of each computatinal basis along each quantum operation at the hover text in plotly.
-Please experience an example 3D interactive html [here](docs/plot_state.html).
+Please experience an example 3D interactive html [here](https://toshi-koike-akino.github.io/qxr/).
 
 ```python
 animate_fig(fig) # create animation gif moving camera
