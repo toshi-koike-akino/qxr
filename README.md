@@ -26,19 +26,13 @@ The above packages can be installed by [requirements.txt](requirements.txt)
 pip install -r requirements.txt
 ```
 
-# Procedural 3D Modeling
+# Quantum Procedural 3D Modeling
 
-## Generative QML
-
-Generative artificial intelligence (AI) technologies such as VAE, GAN, DDPM, and ChatGPT have shown impressive performance lately for artistic work, linguistic work, etc. (e.g., refer [awesome list](https://github.com/yzy1996/Awesome-Generative-Model)). We use generative QML framework for procedural 3D modeling in XR scenarios, based on [patched quantum WGAN-GP](https://arxiv.org/pdf/2212.11614.pdf) proposed in 2023 Jan. TBD...
-
-## QML Ansatz
-
-We use QML ansatz based on  to train. TBD...
+Generative artificial intelligence (AI) technologies such as VAE, GAN, DDPM, and ChatGPT have shown impressive performance lately for artistic work, linguistic work, etc. (e.g., refer [awesome list](https://github.com/yzy1996/Awesome-Generative-Model)). The quantum counterparts --- generative QML framework --- have been also attractive as a [quantum procedural generation](https://arxiv.org/abs/2007.11510). We consider to apply the generative QML for procedural **3D modeling** in XR scenarios.
 
 ## QML Visualization
 
-We also provide a new visualization tool chain of QML model. We use [plotly](https://plotly.com/python/3d-charts/) for interactive 3D visualization of QML model.
+We first provide a new visualization tool chain of QML model for inspection. We use [plotly](https://plotly.com/python/3d-charts/) for interactive 3D visualization of QML model.
 
 ### Built-in QML Visualization
 
@@ -54,7 +48,7 @@ def qnode(features, params):
     return [qml.expval(qml.PauliZ(k)) for k in dev.wires]
 ```
 
-With a built-in [draw](https://docs.pennylane.ai/en/stable/code/api/pennylane.drawer.draw.html), we can draw it in 'gradient' or 'device' expansion strategy as follows:
+With a built-in [draw()](https://docs.pennylane.ai/en/stable/code/api/pennylane.drawer.draw.html), we can inspect the variational quantum circuit (VQC) in either 'gradient' or 'device' expansion strategy as follows:
 
 ```python
 print(qml.draw(qnode, expansion_strategy="gradient")(features, params))
@@ -72,7 +66,7 @@ print(qml.draw(qnode, expansion_strategy="device")(features, params))
 4: ──RX(0.74)──RY(0.60)──────────────╰Z──RY(0.05)──────────────╰Z──RY(1.00)─┤  <Z>
 ```
 
-The built-in [draw_mpl](https://docs.pennylane.ai/en/stable/code/api/pennylane.drawer.draw_mpl.html) provides the corresponding plots like:
+The built-in [draw_mpl()](https://docs.pennylane.ai/en/stable/code/api/pennylane.drawer.draw_mpl.html) provides a nice corresponding plot for the corresponding QML model like:
 
 ```python
 fig, _ = qml.draw_mpl(qnode, style="sketch", expansion_strategy="device")(features, params)
@@ -83,9 +77,9 @@ fig.show()
 
 ### New QML Visualization
 
-The above drawers need specific 'features' and 'params' to visualize, but they are not used to show how those variables behave in QML model. We visualize the evolution of quantum states across the QML circuit by measureming [state](https://docs.pennylane.ai/en/stable/code/api/pennylane.state.html?highlight=qml.state) at intermediate circuits decomposed in a quantum [tape](https://docs.pennylane.ai/en/stable/code/api/pennylane.tape.QuantumTape.html).
+The above drawers need specific `features` and `params` to visualize, but they are not used to show how those variables behave in QML model. We visualize the evolution of quantum states across the QML circuit by measureming quantum [state](https://docs.pennylane.ai/en/stable/code/api/pennylane.state.html?highlight=qml.state) at intermediate circuits decomposed in a quantum [tape](https://docs.pennylane.ai/en/stable/code/api/pennylane.tape.QuantumTape.html).
 
-Our visualization tool is written in [plot_state.py](plot_state.py). For example, draw_states() plots 3D interactive state vector evolutions:
+Our visualization tool is written in [plot_state.py](plot_state.py), consisting two main functions: `state_evolve()` to track the quantum state vector across the QML model; `plot_states()` to visualize in interactive 3D plots. A wrapper function `draw_states()` uses those functions to plot 3D interactive state vector evolutions, using a similar syntax of built-in `draw()`:
 
 ```python
 from plot_state import draw_states
@@ -94,17 +88,79 @@ fig = draw_states(qnode)(features, params)
 
 ![plot_state_hover](images/plot_state_hover.png)
 As shown above, we can check probability and phase of each computatinal basis along each quantum operation at the hover text in plotly.
-Please experience an example 3D interactive html [here](https://toshi-koike-akino.github.io/qxr/).
+You can experience an example 3D interactive plotly [here](https://toshi-koike-akino.github.io/qxr/).
 
 ```python
 animate_fig(fig) # create animation gif moving camera
 ```
 
+Let's enjoy the immersive 3D world!
 ![plot_state.gif](images/plot_state.gif)
+
+## Generative QML
+
+We use a new generated QML framework, based on [patched quantum WGAN-GP](https://arxiv.org/pdf/2212.11614.pdf) proposed in 2023 Jan. Here, we consider 3D model reconstraction tasks, like [paperswithcode.com](https://paperswithcode.com/datasets?task=depth-estimation). As an example, we pick up [EDEN 3D dataset](https://lhoangan.github.io/eden/). To prepare the dataset, you may use [download_eden.sh](download_eden.sh) and [prep_eden.py](prep_eden.py):
+
+```bash
+bash download_eden.sh # to download sample EDEN datasets (19GB)
+python prep_eden.py # to prepare data/eden.npz
+```
+
+Of course, we can play with different 3D data.
+
+## QML Ansatz
+
+Our QNN model is written in [qnet.py](qnet.py), consisting of two models: `QNN` class as a quantum counterpart of `torch.nn.Linear`; `Quanv2d` class as a quantum `torch.nn.Conv2d`. They have similar syntax of torch such as:
+
+```python
+qnn = QNN(in_features, out_features)
+quanv = Quanv2d(in_channels, out_channels, kernel_size, stride)
+```
+
+We can train them as usual of torch pipelines without carying quantum computing:
+
+```python
+opt = torch.optim.AdamW(qnn.parameters(), lr)
+for epoch in range(nepoch):
+    for x, y in dataloader:
+        qnn.zero_grad()
+        yhat = qnn(x)
+        loss = ...
+        loss.backward()
+        opt.step()
+```  
+
+And, we can easily integrate classical DNN and quantum DNN, like
+
+```python
+model = torch.nn.Sequential(
+    torch.nn.Conv2d(...),
+    Quanv2d(...), # Quantum Conv
+    torch.nn.Flatten(),
+    torch.nn.Linear(...),
+    QNN(...), # Quantum FC
+)
+```
+
+The required number of qubits is automatically calculated to embed the classical data into VQC.
+
+Our VQC uses either [AmplitudeEmbedding](https://docs.pennylane.ai/en/stable/code/api/pennylane.AmplitudeEmbedding.html) or [AngleEmbedding](https://docs.pennylane.ai/en/stable/code/api/pennylane.AngleEmbedding.html?highlight=qml.AngleEmbedding) depending on `emb` factor. And, measurements are either [probs](https://docs.pennylane.ai/en/stable/code/api/pennylane.probs.html?highlight=qml.probs]) or [expval](https://docs.pennylane.ai/en/stable/code/api/pennylane.expval.html?highlight=qml.expval). AmplitudeEmbedding and probs can deal with exponentially larger dimensions of features, while they may not be fully-supported depending on plugins.
+
+A fully customizable QML framework was introduced in [AutoQML framework](https://arxiv.org/abs/2205.09115), that can  automattically configure best QML ansatz.
 
 ## QML in Mixed Reality
 
-We use Blender for XR experience of QML. TBD...
+We use Blender for XR experience of QML. Once the QML generated 3D models, we can render the reconstructed RGB-D data to export into 3D XR data such as FBX.
+[blender_surface.py](blender_surface.py) converts images of RGB `rgb.png` and depth `dep.png` into `surface.fbx` through [bpy](https://docs.blender.org/api/current/index.html) library:
+
+```bash
+blender --python blender_surface.py
+```
+
+![blender_surface](images/eden_blender.png)
+It is ready to go with your XR headsets to immerse 3D scenes.
+
+TODO: XR experiments, motion tracking, etc.
 
 # GPU/QPU Devices
 
@@ -114,12 +170,13 @@ It is straightforward to use a (or multiple) **graphic processing unit (GPU)** f
 
 ```bash
 pip install pennylane-lightning[gpu]
-python main.py --dev lightening.gpu
+python main.py --dev lightning.gpu
 ```
 
 For more information, please refer to the [PennyLane Lightning GPU plugin](https://docs.pennylane.ai/projects/lightning-gpu/en/latest/) documentation.
 
-Below is a benchmark comparison with NVIDIA A100: TBD...
+Note: `probs()` measurements are not supported yet for lightning, and you may need to use `--meas expval`.
+Below is a benchmark comparison with NVIDIA A100: TBD ...
 
 ## IBM QPU
 
