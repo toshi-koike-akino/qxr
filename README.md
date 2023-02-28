@@ -152,9 +152,12 @@ Our VQC uses either [AmplitudeEmbedding](https://docs.pennylane.ai/en/stable/cod
 
 A fully customizable QML framework was introduced in [AutoQML framework](https://arxiv.org/abs/2205.09115), that can  automattically configure best QML ansatz.
 
-### QML Training
+### QWGAN Training
 
-Quantum Conditional Wassestern generative adversarial network with gradient penalty (QcWGAN-PG) is implemented in [train.py](train.py), using our [qnet.py](qnet.py). We use hybrid classical-quantum DNN model. The useage is as follows:
+Quantum Conditional Wassestern generative adversarial network with gradient penalty (QcWGAN-PG) is implemented in [train.py](train.py), using our [qnet.py](qnet.py). The system is as follows:
+![gan](images/gan.png)
+
+We use hybrid classical-quantum DNN model. The useage is as follows:
 
 ```bash
 python train.py --patch 32 --kernel 5 --gen 3 10 20 10 1 --disc 4 10 20 10 1 --penalty 5.0 
