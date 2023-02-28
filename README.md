@@ -30,7 +30,7 @@ pip install -r requirements.txt
 
 ## Generative QML
 
-Generative artificial intelligence (AI) technologies such as VAE, GAN, DDPM, and ChatGPT have shown impressive performance recently for artistic work, linguistic work, etc. (e.g., refer [awesome list](https://github.com/yzy1996/Awesome-Generative-Model)) We use generative QML framework for procedural 3D modeling in XR scenarios, based on [patched quantum WGAN-GP](https://arxiv.org/pdf/2212.11614.pdf) proposed in 2023 Jan. TBD...
+Generative artificial intelligence (AI) technologies such as VAE, GAN, DDPM, and ChatGPT have shown impressive performance lately for artistic work, linguistic work, etc. (e.g., refer [awesome list](https://github.com/yzy1996/Awesome-Generative-Model)). We use generative QML framework for procedural 3D modeling in XR scenarios, based on [patched quantum WGAN-GP](https://arxiv.org/pdf/2212.11614.pdf) proposed in 2023 Jan. TBD...
 
 ## QML Ansatz
 
@@ -42,16 +42,16 @@ We also provide a new visualization tool chain of QML model. We use [plotly](htt
 
 ### Built-in QML Visualization
 
-Suppose we use a QML model having [AngleEmbedding](https://docs.pennylane.ai/en/stable/code/api/pennylane.AngleEmbedding.html?highlight=qml.AngleEmbedding) to encode features and [SimplifiedTwoDesign](https://docs.pennylane.ai/en/stable/code/api/pennylane.SimplifiedTwoDesign.html) to entangle the states like below:
+Suppose we use a QML model having [AngleEmbedding](https://docs.pennylane.ai/en/stable/code/api/pennylane.AngleEmbedding.html?highlight=qml.AngleEmbedding) to encode features and [SimplifiedTwoDesign](https://docs.pennylane.ai/en/stable/code/api/pennylane.SimplifiedTwoDesign.html) to entangle the states via trainable params like below:
 
 ```python
-    dev = qml.device('default.qubit', 5)
-    # sample QNN model
-    @qml.qnode(dev)
-    def qnode(features, params):
-        qml.AngleEmbedding(features, wires=dev.wires)
-        qml.SimplifiedTwoDesign(params[0], params[1], wires=dev.wires)
-        return [qml.expval(qml.PauliZ(k)) for k in dev.wires]
+dev = qml.device('default.qubit', 5)
+# sample QNN model
+@qml.qnode(dev)
+def qnode(features, params):
+    qml.AngleEmbedding(features, wires=dev.wires)
+    qml.SimplifiedTwoDesign(params[0], params[1], wires=dev.wires)
+    return [qml.expval(qml.PauliZ(k)) for k in dev.wires]
 ```
 
 With a built-in [draw](https://docs.pennylane.ai/en/stable/code/api/pennylane.drawer.draw.html), we can draw it in 'gradient' or 'device' expansion strategy as follows:

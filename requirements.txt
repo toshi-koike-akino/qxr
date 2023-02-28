@@ -4,6 +4,8 @@ tqdm
 vtk
 plotly
 kalaido
+pandas
 Pillow
+gdown
 #hashlib
 #bpy
