@@ -99,7 +99,11 @@ Let's enjoy the immersive 3D world!
 
 ## Generative QML
 
-We use a new generated QML framework, based on [patched quantum WGAN-GP](https://arxiv.org/pdf/2212.11614.pdf) proposed in 2023 Jan. Here, we consider 3D model reconstraction tasks, like [paperswithcode.com](https://paperswithcode.com/datasets?task=depth-estimation). As an example, we pick up [EDEN 3D dataset](https://lhoangan.github.io/eden/). To prepare the dataset, you may use [download_eden.sh](download_eden.sh) and [prep_eden.py](prep_eden.py):
+We use a new generated QML framework, based on [patched quantum WGAN-GP](https://arxiv.org/pdf/2212.11614.pdf) proposed in 2023 Jan.
+
+### Dataset
+
+ Here, we consider 3D model reconstraction tasks, like [paperswithcode.com](https://paperswithcode.com/datasets?task=depth-estimation). As an example, we pick up [EDEN 3D dataset](https://lhoangan.github.io/eden/). To prepare the dataset, you may use [download_eden.sh](download_eden.sh) and [prep_eden.py](prep_eden.py):
 
 ```bash
 bash download_eden.sh # to download sample EDEN datasets (19GB)
@@ -108,7 +112,7 @@ python prep_eden.py # to prepare data/eden.npz
 
 Of course, we can play with different 3D data.
 
-## QML Ansatz
+### QML Ansatz
 
 Our QNN model is written in [qnet.py](qnet.py), consisting of two models: `QNN` class as a quantum counterpart of `torch.nn.Linear`; `Quanv2d` class as a quantum `torch.nn.Conv2d`. They have similar syntax of torch such as:
 
@@ -148,6 +152,18 @@ Our VQC uses either [AmplitudeEmbedding](https://docs.pennylane.ai/en/stable/cod
 
 A fully customizable QML framework was introduced in [AutoQML framework](https://arxiv.org/abs/2205.09115), that can  automattically configure best QML ansatz.
 
+### QML Training
+
+Quantum Conditional Wassestern generative adversarial network with gradient penalty (QcWGAN-PG) is implemented in [train.py](train.py), using our [qnet.py](qnet.py). We use hybrid classical-quantum DNN model. The useage is as follows:
+
+```bash
+python train.py --patch 32 --kernel 5 --gen 3 10 20 10 1 --disc 4 10 20 10 1 --penalty 5.0 
+```
+
+For this example, the patch size is 32, CNN kernel size is 5, generator CNN uses [3, 10, 20, 10, 1] channels, discriminator CNN users [5, 10, 20, 10, 1] channels, and gradient penalty is 5.0.
+Once the training is done, `gen.pt` and `disc.pt` are saved in `models` folder.
+The trained AI model can then be used to reconstruct RGB-D data for rendering.
+
 ## QML in Mixed Reality
 
 We use Blender for XR experience of QML. Once the QML generated 3D models, we can render the reconstructed RGB-D data to export into 3D XR data such as FBX.
@@ -170,7 +186,7 @@ It is straightforward to use a (or multiple) **graphic processing unit (GPU)** f
 
 ```bash
 pip install pennylane-lightning[gpu]
-python main.py --dev lightning.gpu
+python train.py --dev lightning.gpu
 ```
 
 For more information, please refer to the [PennyLane Lightning GPU plugin](https://docs.pennylane.ai/projects/lightning-gpu/en/latest/) documentation.
@@ -187,7 +203,7 @@ To run our on a real QPU, you just need to change the device as follows:
 
 ```bash
 pip install pennylane-qiskit # qiskit plugin
-python main.py --dev qiskit.ibmq
+python train.py --dev qiskit.ibmq
 ```
 
 ## AWS Braket
@@ -197,7 +213,7 @@ For example, we may run as
 
 ```bash
 pip install amazon-braket-pennylane-plugin # AWS plugin
-python main.py --dev braket.aws.qubit
+python train.py --dev braket.aws.qubit
 ```
 
 Further examples and tutorials are found at [amazon-braket-example](https://github.com/aws/amazon-braket-examples) and [README](https://github.com/aws/amazon-braket-sdk-python/blob/main/README.md).
