@@ -110,7 +110,7 @@ bash download_eden.sh # to download sample EDEN datasets (19GB)
 python prep_eden.py # to prepare data/eden.npz
 ```
 
-Of course, we can play with different 3D data.
+Of course, we can play with different 3D data. For example, [prep_redweb.py](prep_redweb.py) prepares `data/redweb.npz` for [ReDWeb dataset](https://sites.google.com/site/redwebcvpr18/).
 
 ### QML Ansatz
 
