@@ -7,5 +7,4 @@ kalaido
 pandas
 Pillow
 gdown
-#hashlib
-#bpy
+bpy
