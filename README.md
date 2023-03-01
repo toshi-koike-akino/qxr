@@ -36,7 +36,7 @@ We first provide a new visualization tool chain of QML model for inspection. We 
 
 ### Built-in QML Visualization
 
-Suppose we use a QML model having [AngleEmbedding](https://docs.pennylane.ai/en/stable/code/api/pennylane.AngleEmbedding.html?highlight=qml.AngleEmbedding) to encode features and [SimplifiedTwoDesign](https://docs.pennylane.ai/en/stable/code/api/pennylane.SimplifiedTwoDesign.html) to entangle the states via trainable params like below:
+Suppose we use a QML model having [AngleEmbedding](https://docs.pennylane.ai/en/stable/code/api/pennylane.AngleEmbedding.html?highlight=qml.AngleEmbedding) to encode `features` and [SimplifiedTwoDesign](https://docs.pennylane.ai/en/stable/code/api/pennylane.SimplifiedTwoDesign.html) to entangle the states via trainable `params` like below:
 
 ```python
 dev = qml.device('default.qubit', 5)
@@ -48,7 +48,7 @@ def qnode(features, params):
     return [qml.expval(qml.PauliZ(k)) for k in dev.wires]
 ```
 
-With a built-in [draw()](https://docs.pennylane.ai/en/stable/code/api/pennylane.drawer.draw.html), we can inspect the variational quantum circuit (VQC) in either 'gradient' or 'device' expansion strategy as follows:
+With a built-in [draw()](https://docs.pennylane.ai/en/stable/code/api/pennylane.drawer.draw.html), we can inspect the variational quantum circuit (VQC) in either `gradient` or `device` expansion strategy as follows:
 
 ```python
 print(qml.draw(qnode, expansion_strategy="gradient")(features, params))
@@ -66,7 +66,7 @@ print(qml.draw(qnode, expansion_strategy="device")(features, params))
 4: ──RX(0.74)──RY(0.60)──────────────╰Z──RY(0.05)──────────────╰Z──RY(1.00)─┤  <Z>
 ```
 
-The built-in [draw_mpl()](https://docs.pennylane.ai/en/stable/code/api/pennylane.drawer.draw_mpl.html) provides a nice corresponding plot for the corresponding QML model like:
+The built-in [draw_mpl()](https://docs.pennylane.ai/en/stable/code/api/pennylane.drawer.draw_mpl.html) provides a nice plot for the corresponding QML model like:
 
 ```python
 fig, _ = qml.draw_mpl(qnode, style="sketch", expansion_strategy="device")(features, params)
@@ -79,7 +79,7 @@ fig.show()
 
 The above drawers need specific `features` and `params` to visualize, but they are not used to show how those variables behave in QML model. We visualize the evolution of quantum states across the QML circuit by measureming quantum [state](https://docs.pennylane.ai/en/stable/code/api/pennylane.state.html?highlight=qml.state) at intermediate circuits decomposed in a quantum [tape](https://docs.pennylane.ai/en/stable/code/api/pennylane.tape.QuantumTape.html).
 
-Our visualization tool is written in [plot_state.py](plot_state.py), consisting two main functions: `state_evolve()` to track the quantum state vector across the QML model; `plot_states()` to visualize in interactive 3D plots. A wrapper function `draw_states()` uses those functions to plot 3D interactive state vector evolutions, using a similar syntax of built-in `draw()`:
+Our visualization tool is written in [plot_state.py](plot_state.py), consisting of two main functions: `state_evolve()` to track the quantum state vector across the QML model; `plot_states()` to visualize interactive 3D plots. A wrapper function `draw_states()` uses those functions to plot 3D interactive state vector evolutions, using a similar syntax of built-in `draw()`:
 
 ```python
 from plot_state import draw_states
@@ -103,7 +103,7 @@ We use a new generated QML framework, based on [patched quantum WGAN-GP](https:/
 
 ### Dataset
 
- Here, we consider 3D model reconstraction tasks, like [paperswithcode.com](https://paperswithcode.com/datasets?task=depth-estimation). As an example, we pick up [EDEN 3D dataset](https://lhoangan.github.io/eden/). To prepare the dataset, you may use [download_eden.sh](download_eden.sh) and [prep_eden.py](prep_eden.py):
+ Here, we consider 3D model reconstraction tasks: [paperswithcode.com](https://paperswithcode.com/datasets?task=depth-estimation). As an example, we pick [EDEN 3D dataset](https://lhoangan.github.io/eden/). To prepare the dataset, you may use [download_eden.sh](download_eden.sh) and [prep_eden.py](prep_eden.py):
 
 ```bash
 bash download_eden.sh # to download sample EDEN datasets (19GB)
@@ -117,6 +117,7 @@ Of course, we can play with different 3D data. For example, [prep_redweb.py](pre
 Our QNN model is written in [qnet.py](qnet.py), consisting of two models: `QNN` class as a quantum counterpart of `torch.nn.Linear`; `Quanv2d` class as a quantum `torch.nn.Conv2d`. They have similar syntax of torch such as:
 
 ```python
+from qnet import QNN, Quanv2d
 qnn = QNN(in_features, out_features)
 quanv = Quanv2d(in_channels, out_channels, kernel_size, stride)
 ```
@@ -139,6 +140,8 @@ And, we can easily integrate classical DNN and quantum DNN, like
 ```python
 model = torch.nn.Sequential(
     torch.nn.Conv2d(...),
+    torch.nn.ReLU(),
+    ...,
     Quanv2d(...), # Quantum Conv
     torch.nn.Flatten(),
     torch.nn.Linear(...),
@@ -148,16 +151,19 @@ model = torch.nn.Sequential(
 
 The required number of qubits is automatically calculated to embed the classical data into VQC.
 
-Our VQC uses either [AmplitudeEmbedding](https://docs.pennylane.ai/en/stable/code/api/pennylane.AmplitudeEmbedding.html) or [AngleEmbedding](https://docs.pennylane.ai/en/stable/code/api/pennylane.AngleEmbedding.html?highlight=qml.AngleEmbedding) depending on `emb` factor. And, measurements are either [probs](https://docs.pennylane.ai/en/stable/code/api/pennylane.probs.html?highlight=qml.probs]) or [expval](https://docs.pennylane.ai/en/stable/code/api/pennylane.expval.html?highlight=qml.expval). AmplitudeEmbedding and probs can deal with exponentially larger dimensions of features, while they may not be fully-supported depending on plugins.
+Our VQC uses either [AmplitudeEmbedding](https://docs.pennylane.ai/en/stable/code/api/pennylane.AmplitudeEmbedding.html) or [AngleEmbedding](https://docs.pennylane.ai/en/stable/code/api/pennylane.AngleEmbedding.html?highlight=qml.AngleEmbedding) depending on `emb` factor. And, measurements are either [probs](https://docs.pennylane.ai/en/stable/code/api/pennylane.probs.html?highlight=qml.probs]) or [expval](https://docs.pennylane.ai/en/stable/code/api/pennylane.expval.html?highlight=qml.expval). AmplitudeEmbedding and probs can deal with exponentially larger dimensions of features, while they may not be fully-supported depending on [plugins](https://pennylane.ai/plugins.html).
 
 A fully customizable QML framework was introduced in [AutoQML framework](https://arxiv.org/abs/2205.09115), that can  automattically configure best QML ansatz.
 
 ### QWGAN Training
 
-Quantum Conditional Wassestern generative adversarial network with gradient penalty (QcWGAN-PG) is implemented in [train.py](train.py), using our [qnet.py](qnet.py). The system is as follows:
+Quantum Conditional Wassestern generative adversarial network with gradient penalty (QcWGAN-PG) is implemented in [train.py](train.py), using our [qnet.py](qnet.py). The system is depected as follows:
+
 ![gan](images/gan.png)
 
-We use hybrid classical-quantum DNN model. The useage is as follows:
+The GML generates a depth map, which is adversarially discriminated from a real depth map by a discreminator DNN, conditioned on a real RGB map.
+This is called a conditional GAN framework. Typically, GAN is unstable, and thus we use Wassestern distance and gradient penalty to stabilize the training.
+We use hybrid classical-quantum DNN model. The useage of our training script [train.py](train.py) is as follows:
 
 ```bash
 python train.py --patch 32 --kernel 5 --gen 3 10 20 10 1 --disc 4 10 20 10 1 --penalty 5.0 
@@ -169,15 +175,15 @@ The trained AI model can then be used to reconstruct RGB-D data for rendering.
 
 ## QML in Mixed Reality
 
-We use Blender for XR experience of QML. Once the QML generated 3D models, we can render the reconstructed RGB-D data to export into 3D XR data such as FBX.
+We use Blender for XR experience of QML. Once the 3D model is generated by the QML, we can render the reconstructed RGB-D data to export into 3D XR data such as FBX.
 [blender_surface.py](blender_surface.py) converts images of RGB `rgb.png` and depth `dep.png` into `surface.fbx` through [bpy](https://docs.blender.org/api/current/index.html) library:
 
 ```bash
-blender --python blender_surface.py
+blender -b --python blender_surface.py
 ```
 
 ![blender_surface](images/eden_blender.png)
-It is ready to go with your XR headsets to immerse 3D scenes.
+It is ready to play with your XR headsets to immerse 3D scenes.
 ![blender_surface_mov](images/eden_blender.gif)
 
 TODO: XR experiments, motion tracking, etc.
