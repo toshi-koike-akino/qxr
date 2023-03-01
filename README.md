@@ -178,6 +178,7 @@ blender --python blender_surface.py
 
 ![blender_surface](images/eden_blender.png)
 It is ready to go with your XR headsets to immerse 3D scenes.
+![blender_surface_mov](images/eden_blender.gif)
 
 TODO: XR experiments, motion tracking, etc.
 
@@ -194,7 +195,7 @@ python train.py --dev lightning.gpu
 
 For more information, please refer to the [PennyLane Lightning GPU plugin](https://docs.pennylane.ai/projects/lightning-gpu/en/latest/) documentation.
 
-Note: `probs()` measurements are not supported yet for lightning, and you may need to use `--meas expval`.
+NOTE: `probs()` measurements are not supported yet for lightning, and you may need to use `--meas expval`.
 Below is a benchmark comparison with NVIDIA A100: TBD ...
 
 ## IBM QPU
