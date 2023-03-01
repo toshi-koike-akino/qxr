@@ -144,7 +144,9 @@ def get_gen(args):
         model.append(torch.nn.BatchNorm2d(args.gen[k + 1]))
     # QNN Conv layer
     model.append(
-        qnet.Quanv2d(1, 1, args.kernel, qdev=args.dev, emb=args.emb, meas=args.meas)
+        qnet.Quanv2d(
+            args.gen[-1], 1, args.kernel, qdev=args.dev, emb=args.emb, meas=args.meas
+        )
     )
     model.append(torch.nn.BatchNorm2d(1))  # scale-up QNN output
 
