@@ -1,6 +1,6 @@
 # Quantum & Mixed Reality (qXR)
 
-This project is an attempt to integrate **quantum machine learning (QML)** and **mixed reality (XR)**, for the hackathon event [QHack 2023](https://github.com/XanaduAI/QHack).
+This project is an attempt to integrate **quantum machine learning (QML)** and **mixed reality (XR)**, for the hackathon event [QHack 2023](https://github.com/XanaduAI/QHack2023).
 
 ![qxr](./images/qxr.png)
 <!--
